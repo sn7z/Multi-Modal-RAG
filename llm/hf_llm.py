@@ -34,7 +34,7 @@ Answer:
         #Generate an answer using retrieved RAG context.
         context = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
         # Optional safety trim
-        context = context[:3000]
+        context = context[:2500]
 
         prompt = self._build_prompt(context, query)
 

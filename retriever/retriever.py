@@ -6,7 +6,7 @@ class Retriever:
         self.vectorstore = vectorstore
         self.collection = collection
 
-    def retrieve(self, query: str, top_k: int = 5):
+    def retrieve(self, query: str, top_k: int = 4):
         
         query_embedding = self.embedder.embed_query(query)
 

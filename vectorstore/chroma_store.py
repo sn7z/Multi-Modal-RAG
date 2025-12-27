@@ -32,3 +32,7 @@ class ChromaVectorStore:
             n_results=k
         )
         return results
+    
+    def clear_collection(self, collection):
+        #Delete all vectors from the collection.
+        collection.delete(where={})
