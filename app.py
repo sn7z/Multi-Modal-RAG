@@ -354,9 +354,8 @@ def load_embedder():
 
 @st.cache_resource
 def load_vectorstore():
-    store = ChromaVectorStore()
-    collection = store.create_collection()
-    return store, collection
+    return ChromaVectorStore()
+
 
 @st.cache_resource
 def load_llm():
@@ -403,7 +402,7 @@ if st.session_state.indexed:
 # Clear conversation button
 if st.session_state.chat_history:
     st.sidebar.markdown("---")
-    if st.sidebar.button("🗑️ Clear Conversations", use_container_width=True):
+    if st.sidebar.button("🗑️ Clear Conversations", use_container_width=True, key="clear_conversations"):
         st.session_state.chat_history = []
         st.rerun()
 
@@ -411,7 +410,7 @@ if st.session_state.chat_history:
 if st.session_state.indexed:
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ⚠️ Danger Zone")
-    clear_vectors_button = st.sidebar.button("🔥 Clear Vector Database", use_container_width=True, type="secondary")
+    clear_vectors_button = st.sidebar.button("🔥 Clear Vector Database", use_container_width=True, type="secondary", key="clear_vectors")
 
 # Clear conversation button
 if st.session_state.chat_history:
@@ -425,7 +424,15 @@ if st.session_state.chat_history:
 # Load Core Components
 # -----------------------------
 embedder = load_embedder()
-vectorstore, collection = load_vectorstore()
+vectorstore = load_vectorstore()
+
+if "collection" not in st.session_state:
+    st.session_state.collection = vectorstore.create_collection(
+        name="rag_collection"
+    )
+
+collection = st.session_state.collection
+
 llm = load_llm()
 source_attributor, confidence_scorer = load_utils()
 
@@ -472,10 +479,20 @@ if index_button:
 
 # Clear vectors handler (placed after components are loaded)
 if 'clear_vectors_button' in locals() and clear_vectors_button:
-    vectorstore.clear_collection(collection)
-    st.session_state.indexed = False
-    st.session_state.chat_history = []
-    st.rerun()
+    try:
+        # Delete & recreate collection
+        st.session_state.collection = vectorstore.clear_collection(
+            name="rag_collection"
+        )
+
+        st.session_state.indexed = False
+        st.session_state.chat_history = []
+
+        st.success("🗑️ Vector database cleared successfully!")
+        st.rerun()
+
+    except Exception as e:
+        st.error(f"Error clearing vector database: {e}")
 
 
 # -----------------------------

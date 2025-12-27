@@ -26,13 +26,14 @@ class ChromaVectorStore:
             embeddings=embeddings
         )
 
-    def similarity_search(self, collection, query_embedding, k=5):
+    def similarity_search(self, collection, query_embedding, k=4):
         results = collection.query(
             query_embeddings=[query_embedding],
             n_results=k
         )
         return results
     
-    def clear_collection(self, collection):
-        #Delete all vectors from the collection.
-        collection.delete(where={})
+    def clear_collection(self, name="rag_collection"):
+        
+        self.client.delete_collection(name=name)
+        return self.create_collection(name=name)
