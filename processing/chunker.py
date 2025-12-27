@@ -1,5 +1,5 @@
 # processing/chunker.py
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Chunk text into smaller pieces for better processing.
 def chunk_text(text: str, chunk_size: int = 1000, chunk_overlap: int = 200):

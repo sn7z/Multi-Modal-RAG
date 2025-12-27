@@ -3,7 +3,7 @@ from ingestion.web import load_website
 from ingestion.text import load_txt
 from ingestion.md import load_md
 
-def ingest(files):
+def ingest_files(files):
     documets = []
     
     for file in files:
@@ -23,14 +23,13 @@ def ingest(files):
     
     return documets
 
-def ingest_website(urls):
-    documents = []
-    
-    for url in urls:
-        text, metadata = load_website(url)
-        documents.append({
+def ingest_url(url):
+    try:
+        text, meta = load_website(url)
+        return [{
             "text": text,
-            "metadata": metadata
-        })
-    
-    return documents
+            "metadata": meta
+        }]
+    except Exception as e:
+        # Fail safely – app should not crash
+        return []
